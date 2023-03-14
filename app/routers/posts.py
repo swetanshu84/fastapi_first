@@ -8,6 +8,10 @@ from ..database import  get_db
 
 from ..config import settings
 
+# CREATE USER postgresur WITH PASSWORD 'PostGres321';
+# GRANT ALL PRIVILEGES ON DATABASE fastapi_db  to postgresur;
+
+# GRANT CONNECT ON DATABASE fastapi_db TO postgres;
 # import psycopg2
 # from psycopg2.extras import RealDictCursor
 # import time
