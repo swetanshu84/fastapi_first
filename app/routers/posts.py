@@ -6,14 +6,16 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 from ..database import  get_db 
 
+from ..config import settings
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
 
+# f'postgresql://{settings.DATABASE_USER}:[{settings.DATABASE_PASSWORD}]:@{settings.DATABASE_HOST}:{settings.DATABASE_PORT}/{settings.DATABASE_NAME}'
 while True:
     try:
-        conn = psycopg2.connect(host='localhost',database='fastapi_db',user='swetanshudubey',password='Sekhar@123',cursor_factory=RealDictCursor)
+        conn = psycopg2.connect(host=f'{settings.DATABASE_HOST}',database=f'{settings.DATABASE_NAME}',user=f'{settings.DATABASE_USER}',password=f'{settings.DATABASE_PASSWORD}',cursor_factory=RealDictCursor)
         cursor = conn.cursor()
         print("Database connection is success")
         break
@@ -22,7 +24,7 @@ while True:
         print("Error : ", error)
         time.sleep(2)
 
-
+# cursor = get_db()
 router = APIRouter(
     prefix="/posts",
     tags=["Posts-APIs"]
@@ -38,7 +40,7 @@ def get_posts(db:Session = Depends(get_db), curr_user:int = Depends(oauth2.get_c
     #    model.Vote, model.Vote.post_id == model.Post.id, isouter=True).group_by(model.Post.id).limit(limit).offset(skip)
     # its not working with with sqlalchemy
     
-    cursor.execute(""" SELECT posts.id AS posts_id, posts.owner_id AS posts_owner_id, posts.title AS posts_title, posts.content AS posts_content, posts.published AS posts_published, posts.created_at AS posts_created_at, count(votes.post_id) AS votes 
+    cursor.query(""" SELECT posts.id AS posts_id, posts.owner_id AS posts_owner_id, posts.title AS posts_title, posts.content AS posts_content, posts.published AS posts_published, posts.created_at AS posts_created_at, count(votes.post_id) AS votes 
 FROM posts LEFT OUTER JOIN votes ON votes.post_id = posts.id GROUP BY posts.id """)
     posts = cursor.fetchall()
     print(posts)
