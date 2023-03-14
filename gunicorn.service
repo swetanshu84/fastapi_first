@@ -1,0 +1,14 @@
+[Unit]
+Description=start unicorn service in background
+After=network.target
+
+[Service]
+User=sekhar
+Group=sekhar
+WorkingDirectory=/home/sekhar/app/src/
+Environment="PATH=/home/sekhar/app/venv/bin"
+EnvironmentFile=/home/sekhar/.env
+ExecStart=/home/sekhar/app/venv/bin/gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:50678
+
+[Install]
+WantedBy=multi-user.target
