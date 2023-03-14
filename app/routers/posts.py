@@ -8,21 +8,21 @@ from ..database import  get_db
 
 from ..config import settings
 
-import psycopg2
-from psycopg2.extras import RealDictCursor
-import time
+# import psycopg2
+# from psycopg2.extras import RealDictCursor
+# import time
 
 # f'postgresql://{settings.DATABASE_USER}:[{settings.DATABASE_PASSWORD}]:@{settings.DATABASE_HOST}:{settings.DATABASE_PORT}/{settings.DATABASE_NAME}'
-while True:
-    try:
-        conn = psycopg2.connect(host=f'{settings.DATABASE_HOST}',database=f'{settings.DATABASE_NAME}',user=f'{settings.DATABASE_USER}',password=f'{settings.DATABASE_PASSWORD}',cursor_factory=RealDictCursor)
-        cursor = conn.cursor()
-        print("Database connection is success")
-        break
-    except Exception as error:
-        print("Database connection failed !")
-        print("Error : ", error)
-        time.sleep(2)
+# while True:
+#     try:
+#         conn = psycopg2.connect(host=f'{settings.DATABASE_HOST}',database=f'{settings.DATABASE_NAME}',user=f'{settings.DATABASE_USER}',password=f'{settings.DATABASE_PASSWORD}',cursor_factory=RealDictCursor)
+#         cursor = conn.cursor()
+#         print("Database connection is success")
+#         break
+#     except Exception as error:
+#         print("Database connection failed !")
+#         print("Error : ", error)
+#         time.sleep(2)
 
 # cursor = get_db()
 router = APIRouter(
@@ -36,14 +36,14 @@ router = APIRouter(
 def get_posts(db:Session = Depends(get_db), curr_user:int = Depends(oauth2.get_current_user),
                     limit:int=10, skip:int = 0,search:Optional[str]="") :
     
-    # posts = db.query(model.Post, func.count(model.Vote.post_id).label("votes")).join(
-    #    model.Vote, model.Vote.post_id == model.Post.id, isouter=True).group_by(model.Post.id).limit(limit).offset(skip)
+    posts = db.query(model.Post, func.count(model.Vote.post_id).label("votes")).join(
+       model.Vote, model.Vote.post_id == model.Post.id, isouter=True).group_by(model.Post.id).limit(limit).offset(skip)
     # its not working with with sqlalchemy
     
-    cursor.query(""" SELECT posts.id AS posts_id, posts.owner_id AS posts_owner_id, posts.title AS posts_title, posts.content AS posts_content, posts.published AS posts_published, posts.created_at AS posts_created_at, count(votes.post_id) AS votes 
-FROM posts LEFT OUTER JOIN votes ON votes.post_id = posts.id GROUP BY posts.id """)
-    posts = cursor.fetchall()
-    print(posts)
+#     cursor.query(""" SELECT posts.id AS posts_id, posts.owner_id AS posts_owner_id, posts.title AS posts_title, posts.content AS posts_content, posts.published AS posts_published, posts.created_at AS posts_created_at, count(votes.post_id) AS votes 
+# FROM posts LEFT OUTER JOIN votes ON votes.post_id = posts.id GROUP BY posts.id """)
+#     posts = cursor.fetchall()
+#     print(posts)
     return posts
     # return   posts # type: ignore
  
